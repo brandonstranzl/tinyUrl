@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>TinyApp</title>
+
+  <style>
+
+    form.delete {
+
+    display: inline-block;
+
+    }
+
+  </style>
+
+</head>
+<body>
+
+  <header>
+    <% include ./_header.ejs %>
+  </header>
+
+  <h1>Here are my URLs</h1>
+
+<!-- for (var key in urls) {
+ urls[key]
+}
+ -->
+
+<ul>
+    <% for (var key in urls) { %>
+      <li><%= key + ": " + urls[key] %>
+        <form class="delete" method="POST" action="/urls/<%= key%>/delete">
+        <input type="submit" value="Submit">
+        <a href="/urls/<%= key%>">EDIT</a>
+        </form>
+      </li>
+        <% } %>
+        <li><a href = "newlink">this is the empty link</a></li>
+
+</ul>
+
+
+    <!-- Add your EJS code here -->
+</body>
+</html>
+
+
+
+
+
+
+
+
+
