@@ -11,11 +11,17 @@
   </style>
 
 <h1>My tinyUrl project</h1>
-<p><%= userinfo %></p>
 
+<p><%= userinfo.id %></p>
+<p><%= userinfo.email %></p>
+
+    <form action="/logout" method="POST">
+    <input type="submit" value="Logout">
+    </form>
 
 <p>Existing Users, please <a href= "/login"> Login.</a></p>
 
 <p>New Users, please register: <a href= "/register"> Register.</a></p>
+
 <hr />
 </header>

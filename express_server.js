@@ -39,52 +39,63 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
- // var key = req.body.key;
- // var urls = urlDatabase;
-  let templateVars = {
-    userinfo: JSON.stringify(users[req.cookies["useridcookie"]]),
-    urls: urlDatabase//[key]
-  };
-  res.render("urls_index", templateVars);
-});
+  if (!users[req.cookies["useridcookie"]]) {
+    let templateVars = {
+    userinfo: "",
+    urls: urlDatabase,
+    }
+    res.render("urls_index", templateVars);
+    }
+    else {
+    let templateVars = {
+    userinfo: users[req.cookies["useridcookie"]],
+    urls: urlDatabase,
+    };
+    res.render("urls_index", templateVars);
+    }
+  });
 
 app.get("/login", (req, res) => {
   // if user is logged in, redirect him to /urls
-  res.render("urls_login", {useridcookie: ''});
+  res.render("login", {useridcookie: ''});
 });
 
 app.get("/register", (req, res) => {
   let templateVars = {
-    userinfo:"",
+    userinfo: ""
   };
   res.render("register", templateVars);
 });
 
 app.post("/register", (req, res, err) => {
-    if (!req.body.email || !req.body.password) {
-      let errorMessage = "The username and password fields are required!"
-      res.status(400);
-      res.send(errorMessage);
-      // res.render("/register")
-    } else {
-    // add user to database
+  let errorMessage = "The username and password fields are required!";
+  if (!req.body.email || !req.body.password) {
+    res.status(400).send(errorMessage);
+    // res.render("/register")
+  // add user to databas e
+} else {
+
     var newUserId = generateRandomString();
     var email = req.body.email;
     var password = req.body.password;
     users[newUserId] = { id: newUserId, email: req.body.email, password: req.body.password };
+
     res.cookie('useridcookie', newUserId);
+
     console.log(users);
+
     res.redirect('/urls');
-    }
-  });
+  }
+
+});
 
 app.get("/urls/new", (req, res) => {
   var key = req.body.key;
   var urls = urlDatabase;
   let templateVars = {
-    usernamecookie: req.cookies["usernamecookie"],
+    // usernamecookie: req.cookies["usernamecookie"],
     errorMessage: '',
-    userinfo: JSON.stringify(users[req.cookies["useridcookie"]]),
+    userinfo: users[req.cookies["useridcookie"]],
     urls: urlDatabase[key]
     };
   res.render("urls_new", templateVars);
@@ -97,20 +108,21 @@ app.post("/urls", (req, res) => {
     res.redirect("/urls");
   } else {
     let templateVars = {
-      usernamecookie: req.cookies["usernamecookie"],
-      errorMessage: "The longURL field is required!"
+      // usernamecookie: req.cookies["usernamecookie"],
+      errorMessage: "The longURL field is required!",
+      userinfo: users[req.cookies["useridcookie"]]
+      }
+      res.render("urls_new", templateVars);
     }
-    res.render("urls_new", templateVars)
-  }
-});
+  });
 
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     urls: urlDatabase,
-    usernamecookie: req.cookies["usernamecookie"],
-    userinfo: JSON.stringify(users[req.cookies["useridcookie"]]),
+    // usernamecookie: req.cookies["usernamecookie"],
+    userinfo: users[req.cookies["useridcookie"]],
   };
   res.render("urls_show", templateVars);
 });
@@ -138,27 +150,35 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  let errorMessage = "The username and password fields are required!"
-    if ((req.body.email && req.body.password) !== undefined) {
-      for (var user in users) {
-        if ((req.body.email === user.email) && (req.body.password === user.password)) {
-        // check if the email matches && password matches
-        res.cookie('useridcookie', user.id);
-        res.redirect("/urls");
-      }
-      res.status(403);
-      res.send("Password and usernames to not matches");
-      }
-      if ((req.body.email && req.body.password) == undefined) {
+  var errorMessage = "The username and password fields are required!";
+  var username = req.body.email;
+  var password = req.body.password;
+  if (!username || !password) {
       res.status(403);
       res.send(errorMessage);
-    }
+      return;
+      };
+  for (var foo in users) {
+      if ((users[foo]['email'] === username) && (users[foo]['password'] === password)) {
+        res.cookie('useridcookie', users[foo]['id']);
+        res.redirect('/urls');
+        return;
+      }
   }
+  res.status(403);
+  res.send("Password and usernames to not matches");
 });
+
+  // // Find user by username
+  // const user = findUser(username)
+  // if (!user) {
+  //   res.redirect('/login')
+  //   return
+  // }
+
     //
     // for (var user in users) {
     //   if ((user.email === req.body.email) && (user.password === req.body.password)) {
-    //   res.cookie('useridcookie', user.id);
     //   res.redirect("/urls");
     //   }
     //   if ((user.email === req.body.email) && (user.password !== req.body.password)) {
