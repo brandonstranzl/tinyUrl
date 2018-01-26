@@ -16,6 +16,17 @@
       border-bottom: black;
     }
 
+    .shortUrldata {
+      font-family: : calibri;
+      font-size: 12px;
+      color: green;
+    }
+
+  header {
+    border-bottom: black 20px;
+    margin-bottom: 30px;
+  }
+
   </style>
 
 </head>
@@ -27,17 +38,20 @@
 
   <h1>Here are my URLs</h1>
 
-<!-- for (var key in urls) {
- urls[key]
+<!-- for (var foo in URLs) {
+ urls[foo]
 }
  -->
 
 <ul>
-    <% for (var key in urls) { %>
-      <li><%= key + ": " + urls[key] %>
-        <form class="delete" method="POST" action="/urls/<%= key%>/delete">
-        <input type="submit" value="Submit">
-        <a href="/urls/<%= key%>">EDIT</a>
+    <% for (var foo in urls) { %>
+      <li><%= foo + ": " + urls[foo] %><br>
+        <span class = "shortUrldata">Date Created + Times Visited + Unique Visits<span><br>
+        <form class="delete" method="POST" action="/urls/<%= foo%>/delete">
+        <input type="submit" value="Delete">
+        <a href="/urls/<%= foo%>">EDIT</a>
+        <a href="/urls/new">ADD NEW</a>
+
         </form>
       </li>
         <% } %>

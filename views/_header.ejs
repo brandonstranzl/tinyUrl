@@ -1,18 +1,21 @@
 <header>
+
+  <style>
+
+  header {
+    border-bottom: 20px;
+    margin-bottom: 30px;
+
+  }
+
+  </style>
+
 <h1>My tinyUrl project</h1>
+<p><%= userinfo %></p>
 
-  <% if  (usernamecookie == undefined) {%>
-  <form method="POST" action="/login">
-  <input type="text" name="username" placeholder="login">
-  <input type="submit" value="submit">
-  </form>
-  <% } else {%>
-    <div>
-    <p>Username: <%= usernamecookie %></p>
-    </div>
-    <form method="POST" action="/logout">
-    <input type="submit" value="Log Out">
-  </form>
-  <% } %>
 
+<p>Existing Users, please <a href= "/login"> Login.</a></p>
+
+<p>New Users, please register: <a href= "/register"> Register.</a></p>
+<hr />
 </header>
