@@ -10,9 +10,11 @@ app.set("view engine", "ejs");
 
 // databases:
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+  "b2xVn2": { longUrl: "http://www.lighthouselabs.ca",
+              userID: "user2RandomID"},
+  "9sm5xK": { longUrl: "http://www.google.com",
+              userId: "user2RandomID"}
+},
 
 // variables:
 const users = {
@@ -71,40 +73,39 @@ app.post("/register", (req, res, err) => {
   let errorMessage = "The username and password fields are required!";
   if (!req.body.email || !req.body.password) {
     res.status(400).send(errorMessage);
-    // res.render("/register")
-  // add user to databas e
 } else {
-
     var newUserId = generateRandomString();
     var email = req.body.email;
     var password = req.body.password;
     users[newUserId] = { id: newUserId, email: req.body.email, password: req.body.password };
-
-    res.cookie('useridcookie', newUserId);
-
+    // res.cookie('useridcookie', newUserId);
     console.log(users);
-
     res.redirect('/urls');
   }
-
 });
 
 app.get("/urls/new", (req, res) => {
-  var key = req.body.key;
-  var urls = urlDatabase;
+if (!users[req.cookies["useridcookie"]]) {
+  res.redirect('/login');
+}
+else {
   let templateVars = {
-    // usernamecookie: req.cookies["usernamecookie"],
-    errorMessage: '',
-    userinfo: users[req.cookies["useridcookie"]],
-    urls: urlDatabase[key]
-    };
+  errorMessage: '',
+  userinfo: users[req.cookies["useridcookie"]],
+  };
+  console.log(templateVars)
   res.render("urls_new", templateVars);
+  }
 });
 
 app.post("/urls", (req, res) => {
   if (req.body.longURL.length > 0) {
     let shortURL = generateRandomString();
+    var userinfo = users[req.cookies["useridcookie"]];
     urlDatabase[shortURL] = req.body.longURL;
+    urlDatabase[shortURL]['cookie'] = userinfo;
+    console.log(urlDatabase);
+    // urlDatabase[]
     res.redirect("/urls");
   } else {
     let templateVars = {
