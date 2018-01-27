@@ -44,8 +44,8 @@
  -->
 
 <ul>
-    <% for (var foo in urls) { %>
-      <li><%= foo + ": " + urls[foo] %><br>
+    <% for (var foo in urlDatabase) { %>
+      <li><%= foo + ": " + urlDatabase[foo] %><br>
         <span class = "shortUrldata">Date Created + Times Visited + Unique Visits<span><br>
         <form class="delete" method="POST" action="/urls/<%= foo%>/delete">
         <input type="submit" value="Delete">

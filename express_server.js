@@ -11,10 +11,10 @@ app.set("view engine", "ejs");
 // databases:
 var urlDatabase = {
   "b2xVn2": { longUrl: "http://www.lighthouselabs.ca",
-              userID: "user2RandomID"},
+              userId: "000000"},
   "9sm5xK": { longUrl: "http://www.google.com",
-              userId: "user2RandomID"}
-},
+              userId: "000111"}
+};
 
 // variables:
 const users = {
@@ -28,7 +28,7 @@ const users = {
     email: "user2@example.com",
     password: "dishwasher-funk"
   }
-}
+};
 
 // gets:
 app.get("/", (req, res) => {
@@ -41,6 +41,12 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  if (users[req.cookies["useridcookie"]]) {
+    var userinfo = (users[req.cookies["useridcookie"]]);
+      // console.log(userinfo)
+      // console.log(userinfo.id);
+  }
+  // console.log(userinfo);
   if (!users[req.cookies["useridcookie"]]) {
     let templateVars = {
     userinfo: "",
@@ -84,72 +90,6 @@ app.post("/register", (req, res, err) => {
   }
 });
 
-app.get("/urls/new", (req, res) => {
-if (!users[req.cookies["useridcookie"]]) {
-  res.redirect('/login');
-}
-else {
-  let templateVars = {
-  errorMessage: '',
-  userinfo: users[req.cookies["useridcookie"]],
-  };
-  console.log(templateVars)
-  res.render("urls_new", templateVars);
-  }
-});
-
-app.post("/urls", (req, res) => {
-  if (req.body.longURL.length > 0) {
-    let shortURL = generateRandomString();
-    var userinfo = users[req.cookies["useridcookie"]];
-    urlDatabase[shortURL] = req.body.longURL;
-    urlDatabase[shortURL]['cookie'] = userinfo;
-    console.log(urlDatabase);
-    // urlDatabase[]
-    res.redirect("/urls");
-  } else {
-    let templateVars = {
-      // usernamecookie: req.cookies["usernamecookie"],
-      errorMessage: "The longURL field is required!",
-      userinfo: users[req.cookies["useridcookie"]]
-      }
-      res.render("urls_new", templateVars);
-    }
-  });
-
-
-app.get("/urls/:id", (req, res) => {
-  let templateVars = {
-    shortURL: req.params.id,
-    urls: urlDatabase,
-    // usernamecookie: req.cookies["usernamecookie"],
-    userinfo: users[req.cookies["useridcookie"]],
-  };
-  res.render("urls_show", templateVars);
-});
-
-app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL]
-  res.redirect(longURL);
-});
-
-app.get("/hello", (req, res) => {
-  res.end("<html><body>Hello <b>World</b></body></html>\n");
-});
-
-// posts:
-
-
-app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.longURL;
-  res.redirect("/urls");
-});
-
-app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
-  res.redirect("/urls");
-});
-
 app.post("/login", (req, res) => {
   var errorMessage = "The username and password fields are required!";
   var username = req.body.email;
@@ -170,32 +110,88 @@ app.post("/login", (req, res) => {
   res.send("Password and usernames to not matches");
 });
 
-  // // Find user by username
-  // const user = findUser(username)
-  // if (!user) {
-  //   res.redirect('/login')
-  //   return
-  // }
-
-    //
-    // for (var user in users) {
-    //   if ((user.email === req.body.email) && (user.password === req.body.password)) {
-    //   res.redirect("/urls");
-    //   }
-    //   if ((user.email === req.body.email) && (user.password !== req.body.password)) {
-    //   res.status(403);
-    //   res.send(errorMessage);
-    //   };
-    //   if ((user.email !== req.body.email) && (user.password === req.body.password)) {
-    //   res.status(403);
-    //   res.send(errorMessage);
-    //   };
-    // }
-
 app.post("/logout", (req, res) => {
   res.clearCookie('useridcookie');
   res.redirect("/urls");
 });
+
+app.get("/urls/new", (req, res) => {
+if (!users[req.cookies["useridcookie"]]) {
+  res.redirect('/login');
+}
+else {
+  let templateVars = {
+  errorMessage: '',
+  userinfo: users[req.cookies["useridcookie"]],
+  };
+  console.log(templateVars)
+  res.render("urls_new", templateVars);
+  }
+});
+
+app.get("/urls/:id", (req, res) => {
+  let templateVars = {
+    shortURL: req.params.id,
+    urls: urlDatabase,
+    // usernamecookie: req.cookies["usernamecookie"],
+    userinfo: users[req.cookies["useridcookie"]],
+  };
+  res.render("urls_show", templateVars);
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL]
+  res.redirect(longURL);
+});
+
+app.get("/hello", (req, res) => {
+  res.end("<html><body>Hello <b>World</b></body></html>\n");
+});
+
+app.post("/urls", (req, res) => {
+  var userdata = users[req.cookies["useridcookie"]];
+  var userId = userdata;
+  console.log(userdata);
+  console.log(userdata.id);
+  if (req.body.longUrl.length > 0) {
+    var newShortUrl = generateRandomString();
+    var longUrl = req.body.longUrl;
+    var userId = userdata.id;
+    urlDatabase[newShortUrl] = {longUrl: req.body.longUrl, userId: userdata.id}
+    console.log(urlDatabase);
+
+    // console.log(urlDatabase["shortUrl"]);
+    // urlDatabase["shortUrl"]["longUrl"] = "req.body.longUrl";
+    // urlDatabase["shortUrl"]["userId"] = "userinfo.id";
+    res.redirect("/urls");
+  } else {
+    let templateVars = {
+      // usernamecookie: req.cookies["usernamecookie"],
+      errorMessage: "The longURL field is required!",
+      userinfo: users[req.cookies["useridcookie"]]
+      }
+      res.render("urls_new", templateVars);
+    }
+  });
+
+app.post("/urls/:id", (req, res) => {
+  urlDatabase[req.params.id] = req.body.longURL;
+  res.redirect("/urls");
+});
+
+app.post("/urls/:id/delete", (req, res) => {
+  console.log(urlDatabase)
+  var userInfo = users[req.cookies["useridcookie"]]
+  if (urlDatabase[shortURL][userInfo] ===
+  users[req.cookies["useridcookie"]]) {
+    delete urlDatabase[req.params.id];
+    res.redirect('/urls');
+    return;
+    } else {
+    res.status(403);
+    res.send(errorMessage);
+    }
+  });
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
