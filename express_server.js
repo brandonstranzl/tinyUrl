@@ -17,19 +17,33 @@ var urlDatabase = {
 };
 
 
+// function urlsForUser(id) {
+// var userUrls = [];
+//   for (var foo in urlDatabase) {
+//     var urlObject = urlDatabase[foo];
+//        urlObject['shortUrl'] = foo;
+//     if (urlDatabase[foo]["userId"] == id) {
+//     userUrls.push(urlObject);
+//     }
+//   }
+//   return (userUrls);
+// };
+
 function urlsForUser(id) {
-var userUrls = [];
+var userUrls = {};
   for (var foo in urlDatabase) {
-    var urlObject = urlDatabase[foo];
-       urlObject['shortUrl'] = foo;
-    if (urlDatabase[foo]["userId"] == id) {
-    userUrls.push(urlObject);
+    var urlObject = urlDatabase[foo]; //add two existing fields in database to new object - longurl and userid
+       urlObject['shortUrl'] = foo; // adds third field to object  short url
+    if (urlDatabase[foo]["userId"] == id) {  // was pushing the object into the array called userUrls
+      userUrls[id] = { longUrl: urlObject['longUrl'], shortUrl: urlObject['shortUrl'],
+      userId: urlObject['userId'] }
     }
   }
+  console.log(userUrls);
   return (userUrls);
 };
 
-userUrls = [];
+userUrls = {};
 console.log(urlsForUser('000111'))
 
 // variables:
@@ -67,16 +81,19 @@ app.get("/urls", (req, res) => {
     }
   if (users[req.cookies["useridcookie"]]) {
     var userId = req.cookies["useridcookie"];
-    var userUrls = [];
+    var userUrls = {};
+    urlsForUser(userId);
     console.log(urlsForUser(userId));
     console.log(req.cookies["useridcookie"]);
     let templateVars = {
     userinfo: users[userId],
     urlDatabase: urlDatabase,
+    users: users,
     userUrls: urlsForUser(userId),
     errorMessage: "",
     };
     console.log(urlDatabase);
+    console.log(urlsForUser(userId));
     res.render("urls_index", templateVars);
     }
   });
@@ -200,17 +217,24 @@ app.get("/hello", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  var userdata = users[req.cookies["useridcookie"]];
+  var userId = req.cookies["useridcookie"];
+  var userUrls = {};
+  console.log(userId);
   // var userId = userdata;
-  console.log(userdata);
-  console.log(userdata.id);
+  // console.log(userdata);
+  // console.log(userdata.id);
   if (req.body.longUrl.length > 0) {
     var newShortUrl = generateRandomString();
     var longUrl = req.body.longUrl;
-    var userId = userdata.id;
-    urlDatabase[newShortUrl] = {longUrl: req.body.longUrl, userId: userdata.id}
+    urlDatabase[newShortUrl] = {longUrl: req.body.longUrl, shortUrl: newShortUrl, userId: userId};
     console.log(urlDatabase);
-
+    // let templateVars = {
+    // userinfo: users[userId],
+    // urlDatabase: urlDatabase,
+    // users: users,
+    // userUrls: urlsForUser(userId),
+    // errorMessage: "",
+    // };
     // console.log(urlDatabase["shortUrl"]);
     // urlDatabase["shortUrl"]["longUrl"] = "req.body.longUrl";
     // urlDatabase["shortUrl"]["userId"] = "userinfo.id";
@@ -219,7 +243,7 @@ app.post("/urls", (req, res) => {
     let templateVars = {
       // usernamecookie: req.cookies["usernamecookie"],
       errorMessage: "You must enter a URL below to add it 👾!",
-      userinfo: users[req.cookies["useridcookie"]]
+      userId: req.cookies["useridcookie"]
       }
       res.render("urls_new", templateVars);
     }
