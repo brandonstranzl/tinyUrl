@@ -51,6 +51,7 @@ app.get("/urls", (req, res) => {
     let templateVars = {
     userinfo: "",
     urlDatabase: urlDatabase,
+    errorMessage: "",
     }
     res.render("urls_index", templateVars);
     }
@@ -58,14 +59,25 @@ app.get("/urls", (req, res) => {
     let templateVars = {
     userinfo: users[req.cookies["useridcookie"]],
     urlDatabase: urlDatabase,
+    errorMessage: "",
     };
+    console.log(urlDatabase);
     res.render("urls_index", templateVars);
     }
   });
 
 app.get("/login", (req, res) => {
   // if user is logged in, redirect him to /urls
-  res.render("login", {useridcookie: ''});
+  if (users[req.cookies["useridcookie"]]) {
+    res.redirect('/urls');
+  };
+  if (!users[req.cookies["useridcookie"]]) {
+    let templateVars = {
+      errorMessage: "",
+      errorMessage1: "",
+    }
+    res.render("login", templateVars);
+  };
 });
 
 app.get("/register", (req, res) => {
@@ -86,8 +98,11 @@ app.post("/register", (req, res, err) => {
     users[newUserId] = { id: newUserId, email: req.body.email, password: req.body.password };
     // res.cookie('useridcookie', newUserId);
     console.log(users);
-    res.redirect('/urls');
-  }
+    let templateVars = {
+    errorMessage1: "",
+    };
+    res.render('login', templateVars);
+  };
 });
 
 app.post("/login", (req, res) => {
@@ -95,19 +110,23 @@ app.post("/login", (req, res) => {
   var username = req.body.email;
   var password = req.body.password;
   if (!username || !password) {
-      res.status(403);
-      res.send(errorMessage);
-      return;
-      };
-  for (var foo in users) {
-      if ((users[foo]['email'] === username) && (users[foo]['password'] === password)) {
-        res.cookie('useridcookie', users[foo]['id']);
-        res.redirect('/urls');
-        return;
+      // res.status(403);
+      // res.send(errorMessage1);
+      let templateVars = {
+        errorMessage1: errorMessage,
       }
-  }
+    res.render('login', templateVars);
+  } else {
+  for (var foo in users) {
+    if ((users[foo]['email'] === username) && (users[foo]['password'] === password)) {
+      res.cookie('useridcookie', users[foo]['id']);
+      res.redirect('/urls');
+      return;
+      }
+    }
   res.status(403);
-  res.send("Password and usernames to not matches");
+  res.send("Password and usernames do not match");
+  }
 });
 
 app.post("/logout", (req, res) => {
@@ -115,11 +134,16 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+// URLs:
+// add a new URL:
 app.get("/urls/new", (req, res) => {
 if (!users[req.cookies["useridcookie"]]) {
-  res.redirect('/login');
-}
-else {
+  let templateVars = {
+  errorMessage1: "You must be logged in to add a URL, please Login:",
+  }
+  res.render("login", templateVars);
+  }
+  else {
   let templateVars = {
   errorMessage: '',
   userinfo: users[req.cookies["useridcookie"]],
@@ -131,10 +155,11 @@ else {
 
 app.get("/urls/:id", (req, res) => {
   if (users[req.cookies["useridcookie"]]) {
-    var userinfo = (users[req.cookies["useridcookie"]]);
+    // var userinfo = (users[req.cookies["useridcookie"]]);
     let templateVars = {
     shortUrl: req.params.id,
     urlDatabase: urlDatabase,
+    errorMessage: "",
     userinfo: users[req.cookies["useridcookie"]],
     }
       res.render("urls_show", templateVars);
@@ -143,10 +168,11 @@ app.get("/urls/:id", (req, res) => {
     let templateVars = {
       userinfo: "",
       urlDatabase: urlDatabase,
-      }
+      errorMessage: "You need to be regisered and logged in to modify the list of URLs",
+      };
     res.render("urls_index", templateVars);
-    }
-  }
+    };
+  };
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -160,7 +186,7 @@ app.get("/hello", (req, res) => {
 
 app.post("/urls", (req, res) => {
   var userdata = users[req.cookies["useridcookie"]];
-  var userId = userdata;
+  // var userId = userdata;
   console.log(userdata);
   console.log(userdata.id);
   if (req.body.longUrl.length > 0) {
@@ -177,7 +203,7 @@ app.post("/urls", (req, res) => {
   } else {
     let templateVars = {
       // usernamecookie: req.cookies["usernamecookie"],
-      errorMessage: "The longURL field is required!",
+      errorMessage: "You must enter a URL below to add it 👾!",
       userinfo: users[req.cookies["useridcookie"]]
       }
       res.render("urls_new", templateVars);
@@ -185,7 +211,11 @@ app.post("/urls", (req, res) => {
   });
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.longURL;
+  urlDatabase[req.params.id]['longUrl'] = req.body.longUrl;
+  let templateVars = {
+  userinfo: users[req.cookies["useridcookie"]],
+  urlDatabase: urlDatabase,
+  }
   res.redirect("/urls");
 });
 

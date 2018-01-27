@@ -1,4 +1,11 @@
-<h3>This is the log in page.</h3>
+<header>
+
+
+</header>
+
+<h2>Please login to proceed:</h2>
+
+<div style="color: red;"><p><%= errorMessage1 %></div>
 
 <form method="POST" action="/login">
 
@@ -11,3 +18,7 @@
   <input type="submit" value="submit">
 
 </form>
+
+<div style="color: blue">
+<p>If you don't have a Login, please click here:  <a href="/register"> Register.<a></p>
+</div>

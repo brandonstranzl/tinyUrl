@@ -36,29 +36,36 @@
      <% include ./_header %>
   </header>
 
-  <h1>Here are my URLs</h1>
+<section>
+  <h2>Here are my URLs</h2>
 
-<!-- for (var foo in URLs) {
- urls[foo]
-}
- -->
+  <h3 style="color: red";><em><%= errorMessage %></em><h3>
+</section>
 
+<div>
 <ul>
-    <% for (var foo in urlDatabase) { %>
-      <li><%= foo + ": " + urlDatabase[foo]["longUrl"] %><br>
-        <span class = "shortUrldata">Date Created + Times Visited + Unique Visits<span><br>
-        <form class="delete" method="POST" action="/urls/<%= foo%>/delete">
+    <% for (var baz in urlDatabase) { %>
+
+      <li><%= baz + ": " + urlDatabase[baz]["longUrl"] %>
+
+        <form class="delete" method="POST" action="/urls/<%= baz%>/delete">
+
         <input type="submit" value="Delete">
-        <a href="/urls/<%= foo%>">EDIT</a>
+
+        <a href="/urls/<%= baz%>">EDIT</a>
+
         <a href="/urls/new">ADD NEW</a>
 
         </form>
+
       </li>
+
         <% } %>
+
         <li><a href = "newlink">this is the empty link</a></li>
 
 </ul>
-
+</div>
 
     <!-- Add your EJS code here -->
 </body>

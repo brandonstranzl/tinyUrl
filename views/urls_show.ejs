@@ -27,8 +27,8 @@
 
   <h3>Assign the key to a URL</h3>
 
-  <p>Here is the shortURL key: <span class="key"><%= shortUrl %></span></p>
-  <p>Here is the longURL referred to by the key: <%= urlDatabase[shortUrl]["longUrl"] %></p>
+  <p>Here is the shortUrl key: <span class="key"><%= shortUrl %></span></p>
+  <p>Here is the longUrl referred to by the key: <%= urlDatabase[shortUrl]["longUrl"] %></p>
 
   <form method="POST" action="/urls/<%= shortUrl %>">
   <p>To change the URL referred to by this key, enter a new URL here:</p>
