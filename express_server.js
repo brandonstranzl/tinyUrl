@@ -16,6 +16,22 @@ var urlDatabase = {
               userId: "000111"}
 };
 
+
+function urlsForUser(id) {
+var userUrls = [];
+  for (var foo in urlDatabase) {
+    var urlObject = urlDatabase[foo];
+       urlObject['shortUrl'] = foo;
+    if (urlDatabase[foo]["userId"] == id) {
+    userUrls.push(urlObject);
+    }
+  }
+  return (userUrls);
+};
+
+userUrls = [];
+console.log(urlsForUser('000111'))
+
 // variables:
 const users = {
   "userRandomID": {
@@ -41,12 +57,6 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  if (users[req.cookies["useridcookie"]]) {
-    var userinfo = (users[req.cookies["useridcookie"]]);
-      // console.log(userinfo)
-      // console.log(userinfo.id);
-  }
-  // console.log(userinfo);
   if (!users[req.cookies["useridcookie"]]) {
     let templateVars = {
     userinfo: "",
@@ -55,10 +65,15 @@ app.get("/urls", (req, res) => {
     }
     res.render("urls_index", templateVars);
     }
-    else {
+  if (users[req.cookies["useridcookie"]]) {
+    var userId = req.cookies["useridcookie"];
+    var userUrls = [];
+    console.log(urlsForUser(userId));
+    console.log(req.cookies["useridcookie"]);
     let templateVars = {
-    userinfo: users[req.cookies["useridcookie"]],
+    userinfo: users[userId],
     urlDatabase: urlDatabase,
+    userUrls: urlsForUser(userId),
     errorMessage: "",
     };
     console.log(urlDatabase);

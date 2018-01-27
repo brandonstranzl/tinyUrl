@@ -44,11 +44,11 @@
 
 <div>
 <ul>
-    <% for (var baz in urlDatabase) { %>
+    <% for (var baz in userUrls) { %>
 
-      <li><%= baz + ": " + urlDatabase[baz]["longUrl"] %>
+      <li><%= userUrls['shortUrl'] + ": " + userUrls['longUrl'] %>
 
-        <form class="delete" method="POST" action="/urls/<%= baz%>/delete">
+        <form class="delete" method="POST" action="/urls/<%= userUrls['shortUrl']%>/delete">
 
         <input type="submit" value="Delete">
 
