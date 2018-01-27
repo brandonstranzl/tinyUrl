@@ -211,7 +211,13 @@ app.post("/urls", (req, res) => {
   });
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id]['longUrl'] = req.body.longUrl;
+  let userinfo = users[req.cookies["useridcookie"]];
+    if (urlDatabase[req.params.id]['userId'] === userinfo["id"]) {
+    urlDatabase[req.params.id]['longUrl'] = req.body.longUrl;
+    } else {
+      res.status(403);
+      res.send("You can only modify you OWN Urls newbie! 🐥");
+    }
   let templateVars = {
   userinfo: users[req.cookies["useridcookie"]],
   urlDatabase: urlDatabase,
@@ -232,7 +238,7 @@ app.post("/urls/:id/delete", (req, res) => {
   console.log(userinfo);
   console.log(userinfo["id"])
   console.log(urlDatabase[req.params.id]['userId'])
-  if (urlDatabase[req.params.id]['userId'] == userinfo["id"]) {
+  if (urlDatabase[req.params.id]['userId'] === userinfo["id"]) {
     delete urlDatabase[req.params.id];
     res.redirect('/urls');
     return;
