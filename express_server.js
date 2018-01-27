@@ -50,14 +50,14 @@ app.get("/urls", (req, res) => {
   if (!users[req.cookies["useridcookie"]]) {
     let templateVars = {
     userinfo: "",
-    urls: urlDatabase,
+    urlDatabase: urlDatabase,
     }
     res.render("urls_index", templateVars);
     }
     else {
     let templateVars = {
     userinfo: users[req.cookies["useridcookie"]],
-    urls: urlDatabase,
+    urlDatabase: urlDatabase,
     };
     res.render("urls_index", templateVars);
     }
@@ -130,13 +130,23 @@ else {
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {
-    shortURL: req.params.id,
-    urls: urlDatabase,
-    // usernamecookie: req.cookies["usernamecookie"],
+  if (users[req.cookies["useridcookie"]]) {
+    var userinfo = (users[req.cookies["useridcookie"]]);
+    let templateVars = {
+    shortUrl: req.params.id,
+    urlDatabase: urlDatabase,
     userinfo: users[req.cookies["useridcookie"]],
-  };
-  res.render("urls_show", templateVars);
+    }
+      res.render("urls_show", templateVars);
+  } else {
+  if (!users[req.cookies["useridcookie"]]) {
+    let templateVars = {
+      userinfo: "",
+      urlDatabase: urlDatabase,
+      }
+    res.render("urls_index", templateVars);
+    }
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -198,7 +208,8 @@ app.listen(PORT, () => {
 });
 
 function generateRandomString() {
-  var letters = ['a','b','c','d','e','f','g','h','i','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
+  var letters = ['a','b','c','d','e','f','g','h','i','k','l','m','n','o',
+  'p','q','r','s','t','u','v','w','x','y','z'];
   var numbers = [0,1,2,3,4,5,6,7,8,9];
   var randomstring = '';
 

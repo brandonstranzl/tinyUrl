@@ -27,12 +27,12 @@
 
   <h3>Assign the key to a URL</h3>
 
-  <p>Here is the shortURL key: <span class="key"><%= shortURL %></span></p>
-  <p>Here is the longURL referred to by the key: <%= urls[shortURL] %></p>
+  <p>Here is the shortURL key: <span class="key"><%= shortUrl %></span></p>
+  <p>Here is the longURL referred to by the key: <%= urlDatabase[shortUrl]["longUrl"] %></p>
 
-  <form method="POST" action="/urls/<%= shortURL %>">
+  <form method="POST" action="/urls/<%= shortUrl %>">
   <p>To change the URL referred to by this key, enter a new URL here:</p>
-  <input type="text" name="longURL" placeholder="http://" style="width: 300px">
+  <input type="text" name="longUrl" placeholder="http://" style="width: 300px">
   <input type="submit" value="Submit">
   </form>
   </p>
