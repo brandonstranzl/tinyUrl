@@ -220,18 +220,28 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
+  var userinfo = users[req.cookies["useridcookie"]];
+  if (!users[req.cookies["useridcookie"]]) {
+    res.status(403);
+    res.send("Unauthorized");
+    return;
+  }
   console.log(urlDatabase)
-  var userInfo = users[req.cookies["useridcookie"]]
-  if (urlDatabase[shortURL][userInfo] ===
-  users[req.cookies["useridcookie"]]) {
+  console.log(users);
+  console.log(users[req.cookies["useridcookie"]]);
+  console.log(userinfo);
+  console.log(userinfo["id"])
+  console.log(urlDatabase[req.params.id]['userId'])
+  if (urlDatabase[req.params.id]['userId'] == userinfo["id"]) {
     delete urlDatabase[req.params.id];
     res.redirect('/urls');
     return;
-    } else {
-    res.status(403);
-    res.send(errorMessage);
     }
-  });
+  else {
+    res.status(403);
+    res.send("You can only delete you own Urls!");
+    }
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
