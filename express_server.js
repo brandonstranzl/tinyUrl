@@ -225,7 +225,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/u/:shortUrl", (req, res) => {
-  let longUrl = urlDatabase[req.params.shortUrl]
+  let longUrl = urlDatabase[req.params.shortUrl]['longUrl'];
   console.log(longUrl)
   res.redirect(longUrl);
 });
