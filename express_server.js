@@ -185,24 +185,42 @@ if (!users[req.cookies["useridcookie"]]) {
 });
 
 app.get("/urls/:id", (req, res) => {
+  var userId = req.cookies["useridcookie"];
+  var userUrls = urlsForUser(userId);
+  console.log(userId);
+  console.log((urlDatabase[req.params.id]['userId']));
   if (users[req.cookies["useridcookie"]]) {
     // var userinfo = (users[req.cookies["useridcookie"]]);
-    let templateVars = {
-    shortUrl: req.params.id,
-    urlDatabase: urlDatabase,
-    errorMessage: "",
-    userinfo: users[req.cookies["useridcookie"]],
+    if (urlDatabase[req.params.id]['userId'] === userId) {
+      let templateVars = {
+        shortUrl: req.params.id,
+        urlDatabase: urlDatabase,
+        errorMessage: "",
+        userinfo: users[req.cookies["useridcookie"]],
+      }
+    res.render("urls_show", templateVars);
     }
-      res.render("urls_show", templateVars);
-  } else {
+  };
+  if (users[req.cookies["useridcookie"]]) {
+    // var userinfo = (users[req.cookies["useridcookie"]]);
+    if (urlDatabase[req.params.id]['userId'] !== userId) {
+      let templateVars = {
+        userinfo: users[userId],
+        userId: userId,
+        userUrls: userUrls,
+        errorMessage: "You can only modify URLs that belong to you newbie 😂",
+      }
+    res.render("urls_index", templateVars);
+    }
+  };
   if (!users[req.cookies["useridcookie"]]) {
     let templateVars = {
       userinfo: "",
       urlDatabase: urlDatabase,
-      errorMessage: "You need to be regisered and logged in to modify the list of URLs",
+      userUrls: [],
+      errorMessage: "You need to be regisered and logged in to modify your list of URLs",
       };
     res.render("urls_index", templateVars);
-    };
   };
 });
 
