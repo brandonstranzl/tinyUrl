@@ -43,7 +43,6 @@ var userUrls = [];
 //   return (userUrls);
 // };
 
-userUrls = {};
 console.log(urlsForUser('000111'))
 
 // variables:
@@ -74,27 +73,26 @@ app.get("/urls", (req, res) => {
   if (!users[req.cookies["useridcookie"]]) {
     let templateVars = {
     userinfo: "",
-    urlDatabase: urlDatabase,
+    userUrls: [],
+    // urlDatabase: urlDatabase,
     errorMessage: "",
     }
     res.render("urls_index", templateVars);
     }
   if (users[req.cookies["useridcookie"]]) {
     var userId = req.cookies["useridcookie"];
-    // urlsForUser(userId);
-    console.log(urlsForUser(userId));
-    console.log(req.cookies["useridcookie"]);
+    console.log(userId);
+    var userUrls = urlsForUser(userId);
+    console.log(urlsForUser(userId))
+    console.log(userUrls);
     let templateVars = {
     userinfo: users[userId],
-    urlDatabase: urlDatabase,
-    users: users,
     userId: userId,
-    // userUrls: urlsForUser(userId),
-    urlsForUser: urlsForUser,
+    userUrls: userUrls,
     errorMessage: "",
     };
-    console.log(urlDatabase);
-    console.log(urlsForUser(userId));
+    // console.log(urlDatabase);
+    // console.log(urlsForUser(userId));
     res.render("urls_index", templateVars);
     }
   });
@@ -208,9 +206,10 @@ app.get("/urls/:id", (req, res) => {
   };
 });
 
-app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL]
-  res.redirect(longURL);
+app.get("/u/:shortUrl", (req, res) => {
+  let longUrl = urlDatabase[req.params.shortUrl]
+  console.log(longUrl)
+  res.redirect(longUrl);
 });
 
 app.get("/hello", (req, res) => {

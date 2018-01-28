@@ -6,6 +6,8 @@ var urlDatabase = {
   baoiv200: { longUrl: 'www.medium.com', userId: 'ttxrt754' }
 }
 
+
+
 // //Using object:
 // function urlsForUser(id) {
 // var userUrls = {};
@@ -22,13 +24,15 @@ var urlDatabase = {
 // };
 
 // urlsForUser('ttxrt754');
-
+//
 
 // Output:
 // // { ttxrt754:
 // //    { longUrl: 'www.medium.com',
 // //      shortUrl: 'baoiv200',
 // //      userId: 'ttxrt754' } }
+
+
 
 
 //Using array:
@@ -42,11 +46,29 @@ var userUrls = [];
     }
   }
   // console.log(userUrls);
+  console.log(userUrls);
   return (userUrls);
 };
 
-// urlsForUser('ttxrt754');
+// var urls = urlDatabase.map(function urlsForUser(id) {
+//   return (id.shortUrl);
+// })
+// console.log(urls)
 
+// console.log(urlDatabase.map(urlsForUser))
+
+// var urls = userUrls.map(function (item) {
+//   console.log(item.longUrl);
+//   console.log(item.longUrl);
+// })
+
+// console.log(urls);
+
+var userUrls = urlsForUser('ttxrt754');
+
+userUrls.map(function (userUrls) {
+  console.log(userUrls['longUrl'] +": " + userUrls['shortUrl']);
+});
 
   // [ { longUrl: 'www.buzzfeed.com',
   //   userId: 'ttxrt754',
@@ -58,9 +80,10 @@ var userUrls = [];
 //   //   userId: 'ttxrt754',
 //   //   shortUrl: 'baoiv200' } ]
 
-for (var item of urlsForUser('ttxrt754')) {
-  console.log(item['longUrl']);
-}
+// for (var item of urlsForUser('ttxrt754')) {
+//   console.log(item['longUrl']);
+//   console.log(item['shortUrl']);
+// }
 
 
 

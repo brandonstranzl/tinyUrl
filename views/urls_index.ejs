@@ -44,22 +44,23 @@
 
 <div>
 <ul>
-    <% for (var item of urlsForUser) { %>
 
-      <li><%= item['shortUrl'] + ": " + item['longUrl'] %>
+  <% userUrls.map(function (url) { %>
 
-        <form class="delete" method="POST" action="/urls/<%= item['shortUrl'] %>/delete">
+      <li><a href="/u/<%= url['shorturl'] %>"><%= url['shortUrl'] %></a>: <a href="<%= url['longUrl'] %>"><%= url['longUrl'] %></a>
+      </li>
+
+        <form class="delete" method="POST" action="/urls/<%= url['shortUrl'] %>/delete">
 
         <input type="submit" value="Delete">
 
-        <a href="/urls/<%= item['shortUrl'] %>">EDIT</a>
-
-
         </form>
+
+        <a href="/urls/<%= url['shortUrl'] %>">EDIT</a>
 
       </li>
 
-        <% } %>
+        <% }) %>
 
         <li><a href="/urls/new">ADD A NEW URL</a></li>
 
