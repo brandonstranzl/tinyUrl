@@ -6,33 +6,33 @@ var urlDatabase = {
   baoiv200: { longUrl: 'www.medium.com', userId: 'ttxrt754' }
 }
 
-//Using object:
-function urlsForUser(id) {
-var userUrls = {};
-  for (var foo in urlDatabase) {
-    var urlObject = urlDatabase[foo]; //add two existing fields in database to new object - longurl and userid
-       urlObject['shortUrl'] = foo; // adds third field to object  short url
-    if (urlDatabase[foo]["userId"] == id) {  // was pushing the object into the array called userUrls
-      userUrls[id] = { longUrl: urlObject['longUrl'], shortUrl: urlObject['shortUrl'],
-      userId: urlObject['userId'] }
-    }
-  }
-  console.log(userUrls);
-  return (userUrls);
-};
+// //Using object:
+// function urlsForUser(id) {
+// var userUrls = {};
+//   for (var foo in urlDatabase) {
+//     var urlObject = urlDatabase[foo]; //add two existing fields in database to new object - longurl and userid
+//        urlObject['shortUrl'] = foo; // adds third field to object  short url
+//     if (urlDatabase[foo]["userId"] == id) {  // was pushing the object into the array called userUrls
+//       userUrls[id] = { longUrl: urlObject['longUrl'], shortUrl: urlObject['shortUrl'],
+//       userId: urlObject['userId'] }
+//     }
+//   }
+//   console.log(userUrls);
+//   return (userUrls);
+// };
 
-urlsForUser('ttxrt754');
+// urlsForUser('ttxrt754');
 
 
-Output:
-// { ttxrt754:
-//    { longUrl: 'www.medium.com',
-//      shortUrl: 'baoiv200',
-//      userId: 'ttxrt754' } }
+// Output:
+// // { ttxrt754:
+// //    { longUrl: 'www.medium.com',
+// //      shortUrl: 'baoiv200',
+// //      userId: 'ttxrt754' } }
 
 
 //Using array:
-function urlsForUser2(id) {
+function urlsForUser(id) {
 var userUrls = [];
   for (var foo in urlDatabase) {
     var urlObject = urlDatabase[foo];
@@ -41,22 +41,27 @@ var userUrls = [];
     userUrls.push(urlObject);
     }
   }
-  console.log(userUrls);
+  // console.log(userUrls);
   return (userUrls);
 };
 
-urlsForUser2('ttxrt754');
+// urlsForUser('ttxrt754');
 
-// Output
-// [ { longUrl: 'www.buzzfeed.com',
-//     userId: 'ttxrt754',
-//     shortUrl: 'vqsvo733' },
-//   { longUrl: 'www.techcrunch.com',
-//     userId: 'ttxrt754',
-//     shortUrl: 'znfan294' },
-//   { longUrl: 'www.medium.com',
-//     userId: 'ttxrt754',
-//     shortUrl: 'baoiv200' } ]
+
+  // [ { longUrl: 'www.buzzfeed.com',
+  //   userId: 'ttxrt754',
+  //   shortUrl: 'vqsvo733' },
+  // { longUrl: 'www.techcrunch.com',
+  //   userId: 'ttxrt754',
+  //   shortUrl: 'znfan294' },
+  // { longUrl: 'www.medium.com',
+//   //   userId: 'ttxrt754',
+//   //   shortUrl: 'baoiv200' } ]
+
+for (var item of urlsForUser('ttxrt754')) {
+  console.log(item['longUrl']);
+}
+
 
 
 // var userUrls = urlsForUser(userinfo.id);

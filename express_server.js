@@ -17,31 +17,31 @@ var urlDatabase = {
 };
 
 
-// function urlsForUser(id) {
-// var userUrls = [];
-//   for (var foo in urlDatabase) {
-//     var urlObject = urlDatabase[foo];
-//        urlObject['shortUrl'] = foo;
-//     if (urlDatabase[foo]["userId"] == id) {
-//     userUrls.push(urlObject);
-//     }
-//   }
-//   return (userUrls);
-// };
-
-function urlsForUser(id) {
-var userUrls = {};
+var urlsForUser = function (id) {
+var userUrls = [];
   for (var foo in urlDatabase) {
-    var urlObject = urlDatabase[foo]; //add two existing fields in database to new object - longurl and userid
-       urlObject['shortUrl'] = foo; // adds third field to object  short url
-    if (urlDatabase[foo]["userId"] == id) {  // was pushing the object into the array called userUrls
-      userUrls[id] = { longUrl: urlObject['longUrl'], shortUrl: urlObject['shortUrl'],
-      userId: urlObject['userId'] }
+    var urlObject = urlDatabase[foo];
+       urlObject['shortUrl'] = foo;
+    if (urlDatabase[foo]["userId"] == id) {
+    userUrls.push(urlObject);
     }
   }
-  console.log(userUrls);
   return (userUrls);
 };
+
+// function urlsForUser(id) {
+// var userUrls = {};
+//   for (var foo in urlDatabase) {
+//     var urlObject = urlDatabase[foo]; //add two existing fields in database to new object - longurl and userid
+//        urlObject['shortUrl'] = foo; // adds third field to object  short url
+//     if (urlDatabase[foo]["userId"] == id) {  // was pushing the object into the array called userUrls
+//       userUrls[id] = { longUrl: urlObject['longUrl'], shortUrl: urlObject['shortUrl'],
+//       userId: urlObject['userId'] }
+//     }
+//   }
+//   console.log(userUrls);
+//   return (userUrls);
+// };
 
 userUrls = {};
 console.log(urlsForUser('000111'))
@@ -81,15 +81,16 @@ app.get("/urls", (req, res) => {
     }
   if (users[req.cookies["useridcookie"]]) {
     var userId = req.cookies["useridcookie"];
-    var userUrls = {};
-    urlsForUser(userId);
+    // urlsForUser(userId);
     console.log(urlsForUser(userId));
     console.log(req.cookies["useridcookie"]);
     let templateVars = {
     userinfo: users[userId],
     urlDatabase: urlDatabase,
     users: users,
-    userUrls: urlsForUser(userId),
+    userId: userId,
+    // userUrls: urlsForUser(userId),
+    urlsForUser: urlsForUser,
     errorMessage: "",
     };
     console.log(urlDatabase);
