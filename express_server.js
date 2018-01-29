@@ -12,12 +12,10 @@ app.set("view engine", "ejs");
 app.use(cookieSession({
   name: 'session',
   keys: ['my_super_secret_key'],
-
-  // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
 
-// databases:
+// database of Urls:
 var urlDatabase = {
   "b2xVn2": { longUrl: "http://www.lighthouselabs.ca",
               userId: "000000"},
@@ -25,7 +23,7 @@ var urlDatabase = {
               userId: "000111"}
 };
 
-
+// callback function for database of urls to associate a url with a user and create userUrl database:
 var urlsForUser = function (id) {
 var userUrls = [];
   for (var foo in urlDatabase) {
@@ -38,23 +36,10 @@ var userUrls = [];
   return (userUrls);
 };
 
-// function urlsForUser(id) {
-// var userUrls = {};
-//   for (var foo in urlDatabase) {
-//     var urlObject = urlDatabase[foo]; //add two existing fields in database to new object - longurl and userid
-//        urlObject['shortUrl'] = foo; // adds third field to object  short url
-//     if (urlDatabase[foo]["userId"] == id) {  // was pushing the object into the array called userUrls
-//       userUrls[id] = { longUrl: urlObject['longUrl'], shortUrl: urlObject['shortUrl'],
-//       userId: urlObject['userId'] }
-//     }
-//   }
-//   console.log(userUrls);
-//   return (userUrls);
-// };
-
+//test that callback funtion works:
 console.log(urlsForUser('000111'))
 
-// variables:
+// database of users:
 const users = {
   "userRandomID": {
     id: "userRandomID",
@@ -87,31 +72,23 @@ app.get("/urls", (req, res) => {
     let templateVars = {
     userinfo: "",
     userUrls: [],
-    // urlDatabase: urlDatabase,
     errorMessage: "",
     }
     res.render("urls_index", templateVars);
     }
   if (users[req.session["useridcookie"]]) {
     var userId = req.session["useridcookie"];
-    // console.log(userId);
     var userUrls = urlsForUser(userId);
-    // console.log(urlsForUser(userId))
-    // console.log(userUrls);
     let templateVars = {
     userinfo: users[userId],
-    // userId: userId,
     userUrls: userUrls,
     errorMessage: "",
     };
-    // console.log(urlDatabase);
-    // console.log(urlsForUser(userId));
     res.render("urls_index", templateVars);
     }
   });
 
 app.get("/login", (req, res) => {
-  // if user is logged in, redirect him to /urls
   if (users[req.session["useridcookie"]]) {
     res.redirect('/urls');
   };
@@ -145,7 +122,6 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res, err) => {
   let errorMessage = "The username and password fields are required!";
-  // const hashedPassword = bcrypt.hash(password, 10);
   if (!req.body.email || !req.body.password) {
     res.status(400).send(errorMessage);
     } else {
@@ -153,13 +129,7 @@ app.post("/register", (req, res, err) => {
     var email = req.body.email;
     var password = req.body.password;
     var hashedPassword = bcrypt.hashSync(password, 10);
-    // bcrypt.hash(req.body.password, 10, (err, hash) => {
-    //   if (err) {
-    //   res.send('There was an error creating your account.')
-    //   return
-    // / /   };
     users[newUserId] = { id: newUserId, email: req.body.email, password: hashedPassword };
-    // res.cookie('useridcookie', newUserId);
     console.log(users);
     let templateVars = {
     errorMessage1: "",
@@ -172,11 +142,7 @@ app.post("/login", (req, res) => {
   var errorMessage = "The username and password fields are required!";
   var username = req.body.email;
   var password = req.body.password;
-
-  // console.log(hashedPassword)
   if (!username || !password) {
-      // res.status(403);
-      // res.send(errorMessage1);
       let templateVars = {
         errorMessage1: errorMessage,
       }
@@ -201,8 +167,6 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-// URLs:
-// add a new URL:
 app.get("/urls/new", (req, res) => {
 if (!users[req.session["useridcookie"]]) {
   let templateVars = {
@@ -226,7 +190,6 @@ app.get("/urls/:id", (req, res) => {
   console.log(userId);
   console.log((urlDatabase[req.params.id]['userId']));
   if (users[req.session["useridcookie"]]) {
-    // var userinfo = (users[req.session["useridcookie"]]);
     if (urlDatabase[req.params.id]['userId'] === userId) {
       let templateVars = {
         shortUrl: req.params.id,
@@ -238,7 +201,6 @@ app.get("/urls/:id", (req, res) => {
     }
   };
   if (users[req.session["useridcookie"]]) {
-    // var userinfo = (users[req.session["useridcookie"]]);
     if (urlDatabase[req.params.id]['userId'] !== userId) {
       let templateVars = {
         userinfo: users[userId],
@@ -283,9 +245,6 @@ app.post("/urls", (req, res) => {
   var userId = req.session["useridcookie"];
   var userUrls = {};
   console.log(userId);
-  // var userId = userdata;
-  // console.log(userdata);
-  // console.log(userdata.id);
   if (req.body.longUrl.length > 0) {
     var newShortUrl = generateRandomString();
     if (!req.body.longUrl.startsWith('http:')) {
@@ -295,20 +254,12 @@ app.post("/urls", (req, res) => {
     };
     urlDatabase[newShortUrl] = {longUrl: longUrl, shortUrl: newShortUrl, userId: userId};
     console.log(urlDatabase);
-    // let templateVars = {
-    // userinfo: users[userId],
-    // urlDatabase: urlDatabase,
-    // users: users,
-    // userUrls: urlsForUser(userId),
-    // errorMessage: "",
-    // };
-    // console.log(urlDatabase["shortUrl"]);
-    // urlDatabase["shortUrl"]["longUrl"] = "req.body.longUrl";
-    // urlDatabase["shortUrl"]["userId"] = "userinfo.id";
-    res.redirect("/urls/" + newShortUrl);
+    res.redirect("/urls/"); //PLEASE NOTEL I HAVE PURPOSELY CHOSEN TO NOT APPEND + newShortUrl) TO THIS LINE OF CODE.
+      // APPENDING + newShortUrl is just a basd user experience.  You should be able to create your list of Urls.
+      // and as you add them, see the total list.  the + newShortUrl would take you to the edit page, which is
+      //accessible from the edit button on the /urls page.  Thus, I am aware this is out of spec.
   } else {
     let templateVars = {
-      // usernamecookie: req.session["usernamecookie"],
       errorMessage: "You must enter a URL below to add it 👾!",
       userId: req.session["useridcookie"]
       }
@@ -338,12 +289,6 @@ app.post("/urls/:id/delete", (req, res) => {
     res.send("Unauthorized");
     return;
   }
-  console.log(urlDatabase)
-  console.log(users);
-  console.log(users[req.session["useridcookie"]]);
-  console.log(userinfo);
-  console.log(userinfo["id"])
-  console.log(urlDatabase[req.params.id]['userId'])
   if (urlDatabase[req.params.id]['userId'] === userinfo["id"]) {
     delete urlDatabase[req.params.id];
     res.redirect('/urls');
