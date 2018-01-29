@@ -3,11 +3,20 @@ var app = express();
 var PORT = process.env.PORT || 8080;
 var cookieParser = require('cookie-parser')
 const bodyParser = require("body-parser");
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+var cookieSession = require('cookie-session');
 
-app.use(cookieParser())
+app.use(cookieParser(('my_super_secret_key')))
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
+
+// app.use(cookieSession({
+//   name: 'session',
+//   keys: [/* secret keys */],
+
+//   // Cookie Options
+//   maxAge: 24 * 60 * 60 * 1000 // 24 hours
+// }))
 
 // databases:
 var urlDatabase = {
@@ -121,13 +130,19 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res, err) => {
   let errorMessage = "The username and password fields are required!";
+  // const hashedPassword = bcrypt.hash(password, 10);
   if (!req.body.email || !req.body.password) {
     res.status(400).send(errorMessage);
-} else {
+    } else {
     var newUserId = generateRandomString();
     var email = req.body.email;
     var password = req.body.password;
-    const hashedPassword = bcrypt.hashSync(password, 10);
+    var hashedPassword = bcrypt.hashSync(password, 10);
+    // bcrypt.hash(req.body.password, 10, (err, hash) => {
+    //   if (err) {
+    //   res.send('There was an error creating your account.')
+    //   return
+    / /   };
     users[newUserId] = { id: newUserId, email: req.body.email, password: hashedPassword };
     // res.cookie('useridcookie', newUserId);
     console.log(users);
@@ -135,13 +150,14 @@ app.post("/register", (req, res, err) => {
     errorMessage1: "",
     };
     res.render('login', templateVars);
-  };
-});
+  });
 
 app.post("/login", (req, res) => {
   var errorMessage = "The username and password fields are required!";
   var username = req.body.email;
   var password = req.body.password;
+
+  // console.log(hashedPassword)
   if (!username || !password) {
       // res.status(403);
       // res.send(errorMessage1);
@@ -150,10 +166,11 @@ app.post("/login", (req, res) => {
       }
     res.render('login', templateVars);
   } else {
-  for (var foo in users) {
-    console.log(users[foo]['password']);
-    if ((users[foo]['email'] === username) && (bcrypt.compareSync(password), hashedPassword) == true) {
-      res.cookie('useridcookie', users[foo]['id']);
+  for (var userId in users) {
+    var hashedPassword = users[userId]['password']
+    console.log(users[userId]['password']);
+    if ((users[userId]['email'] === username) && (bcrypt.compareSync(password, hashedPassword))) {
+      res.cookie('useridcookie', users[userId]['id']);
       res.redirect('/urls');
       return;
       }
