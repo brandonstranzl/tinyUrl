@@ -5,18 +5,17 @@ var cookieParser = require('cookie-parser')
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 var cookieSession = require('cookie-session');
-
-app.use(cookieParser(('my_super_secret_key')))
+// app.use(cookieParser(('my_super_secret_key')))
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
-// app.use(cookieSession({
-//   name: 'session',
-//   keys: [/* secret keys */],
+app.use(cookieSession({
+  name: 'session',
+  keys: ['my_super_secret_key'],
 
-//   // Cookie Options
-//   maxAge: 24 * 60 * 60 * 1000 // 24 hours
-// }))
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 
 // databases:
 var urlDatabase = {
@@ -71,7 +70,7 @@ const users = {
 
 // gets:
 app.get("/", (req, res) => {
-  console.log(req.cookies);
+  console.log(req.session);
   res.end("hello");
 });
 
@@ -80,7 +79,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  if (!users[req.cookies["useridcookie"]]) {
+  if (!users[req.session["useridcookie"]]) {
     let templateVars = {
     userinfo: "",
     userUrls: [],
@@ -89,15 +88,15 @@ app.get("/urls", (req, res) => {
     }
     res.render("urls_index", templateVars);
     }
-  if (users[req.cookies["useridcookie"]]) {
-    var userId = req.cookies["useridcookie"];
-    console.log(userId);
+  if (users[req.session["useridcookie"]]) {
+    var userId = req.session["useridcookie"];
+    // console.log(userId);
     var userUrls = urlsForUser(userId);
-    console.log(urlsForUser(userId))
-    console.log(userUrls);
+    // console.log(urlsForUser(userId))
+    // console.log(userUrls);
     let templateVars = {
     userinfo: users[userId],
-    userId: userId,
+    // userId: userId,
     userUrls: userUrls,
     errorMessage: "",
     };
@@ -109,10 +108,10 @@ app.get("/urls", (req, res) => {
 
 app.get("/login", (req, res) => {
   // if user is logged in, redirect him to /urls
-  if (users[req.cookies["useridcookie"]]) {
+  if (users[req.session["useridcookie"]]) {
     res.redirect('/urls');
   };
-  if (!users[req.cookies["useridcookie"]]) {
+  if (!users[req.session["useridcookie"]]) {
     let templateVars = {
       errorMessage: "",
       errorMessage1: "",
@@ -122,10 +121,22 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  let templateVars = {
-    userinfo: ""
-  };
-  res.render("register", templateVars);
+  if (!users[req.session["useridcookie"]]) {
+    let templateVars = {
+      userinfo: ""
+    };
+  res.render("register", templateVars)
+  }
+  if (users[req.session["useridcookie"]]) {
+    var userId = req.session["useridcookie"];
+    var userUrls = urlsForUser(userId);
+    let templateVars = {
+      userinfo: users[userId],
+      userUrls: userUrls,
+      errorMessage: "You are already registered my good friend!👍",
+    };
+  res.render("urls_index", templateVars);
+  }
 });
 
 app.post("/register", (req, res, err) => {
@@ -142,7 +153,7 @@ app.post("/register", (req, res, err) => {
     //   if (err) {
     //   res.send('There was an error creating your account.')
     //   return
-    / /   };
+    // / /   };
     users[newUserId] = { id: newUserId, email: req.body.email, password: hashedPassword };
     // res.cookie('useridcookie', newUserId);
     console.log(users);
@@ -150,6 +161,7 @@ app.post("/register", (req, res, err) => {
     errorMessage1: "",
     };
     res.render('login', templateVars);
+    }
   });
 
 app.post("/login", (req, res) => {
@@ -170,25 +182,25 @@ app.post("/login", (req, res) => {
     var hashedPassword = users[userId]['password']
     console.log(users[userId]['password']);
     if ((users[userId]['email'] === username) && (bcrypt.compareSync(password, hashedPassword))) {
-      res.cookie('useridcookie', users[userId]['id']);
+      req.session['useridcookie'] = users[userId]['id'];
       res.redirect('/urls');
       return;
       }
     }
   res.status(403);
-  res.send("Password and usernames do not match");
+  res.send("Password and usernames do not match.");
   }
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('useridcookie');
+  req.session = null;
   res.redirect("/urls");
 });
 
 // URLs:
 // add a new URL:
 app.get("/urls/new", (req, res) => {
-if (!users[req.cookies["useridcookie"]]) {
+if (!users[req.session["useridcookie"]]) {
   let templateVars = {
   errorMessage1: "You must be logged in to add a URL, please Login:",
   }
@@ -197,7 +209,7 @@ if (!users[req.cookies["useridcookie"]]) {
   else {
   let templateVars = {
   errorMessage: '',
-  userinfo: users[req.cookies["useridcookie"]],
+  userinfo: users[req.session["useridcookie"]],
   };
   console.log(templateVars)
   res.render("urls_new", templateVars);
@@ -205,24 +217,24 @@ if (!users[req.cookies["useridcookie"]]) {
 });
 
 app.get("/urls/:id", (req, res) => {
-  var userId = req.cookies["useridcookie"];
+  var userId = req.session["useridcookie"];
   var userUrls = urlsForUser(userId);
   console.log(userId);
   console.log((urlDatabase[req.params.id]['userId']));
-  if (users[req.cookies["useridcookie"]]) {
-    // var userinfo = (users[req.cookies["useridcookie"]]);
+  if (users[req.session["useridcookie"]]) {
+    // var userinfo = (users[req.session["useridcookie"]]);
     if (urlDatabase[req.params.id]['userId'] === userId) {
       let templateVars = {
         shortUrl: req.params.id,
         urlDatabase: urlDatabase,
         errorMessage: "",
-        userinfo: users[req.cookies["useridcookie"]],
+        userinfo: users[req.session["useridcookie"]],
       }
     res.render("urls_show", templateVars);
     }
   };
-  if (users[req.cookies["useridcookie"]]) {
-    // var userinfo = (users[req.cookies["useridcookie"]]);
+  if (users[req.session["useridcookie"]]) {
+    // var userinfo = (users[req.session["useridcookie"]]);
     if (urlDatabase[req.params.id]['userId'] !== userId) {
       let templateVars = {
         userinfo: users[userId],
@@ -233,7 +245,7 @@ app.get("/urls/:id", (req, res) => {
     res.render("urls_index", templateVars);
     }
   };
-  if (!users[req.cookies["useridcookie"]]) {
+  if (!users[req.session["useridcookie"]]) {
     let templateVars = {
       userinfo: "",
       urlDatabase: urlDatabase,
@@ -255,7 +267,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  var userId = req.cookies["useridcookie"];
+  var userId = req.session["useridcookie"];
   var userUrls = {};
   console.log(userId);
   // var userId = userdata;
@@ -279,16 +291,16 @@ app.post("/urls", (req, res) => {
     res.redirect("/urls");
   } else {
     let templateVars = {
-      // usernamecookie: req.cookies["usernamecookie"],
+      // usernamecookie: req.session["usernamecookie"],
       errorMessage: "You must enter a URL below to add it 👾!",
-      userId: req.cookies["useridcookie"]
+      userId: req.session["useridcookie"]
       }
       res.render("urls_new", templateVars);
     }
   });
 
 app.post("/urls/:id", (req, res) => {
-  let userinfo = users[req.cookies["useridcookie"]];
+  let userinfo = users[req.session["useridcookie"]];
     if (urlDatabase[req.params.id]['userId'] === userinfo["id"]) {
     urlDatabase[req.params.id]['longUrl'] = req.body.longUrl;
     } else {
@@ -296,22 +308,22 @@ app.post("/urls/:id", (req, res) => {
       res.send("You can only modify you OWN Urls newbie! 🐥");
     }
   let templateVars = {
-  userinfo: users[req.cookies["useridcookie"]],
+  userinfo: users[req.session["useridcookie"]],
   urlDatabase: urlDatabase,
   }
   res.redirect("/urls");
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  var userinfo = users[req.cookies["useridcookie"]];
-  if (!users[req.cookies["useridcookie"]]) {
+  var userinfo = users[req.session["useridcookie"]];
+  if (!users[req.session["useridcookie"]]) {
     res.status(403);
     res.send("Unauthorized");
     return;
   }
   console.log(urlDatabase)
   console.log(users);
-  console.log(users[req.cookies["useridcookie"]]);
+  console.log(users[req.session["useridcookie"]]);
   console.log(userinfo);
   console.log(userinfo["id"])
   console.log(urlDatabase[req.params.id]['userId'])
