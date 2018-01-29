@@ -1,10 +1,61 @@
 var urlDatabase = {
   b2xVn2: { longUrl: 'http://www.lighthouselabs.ca', userId: '000000' },
   '9sm5xK': { longUrl: 'http://www.google.com', userId: '000111' },
-  vqsvo733: { longUrl: 'www.buzzfeed.com', userId: 'ttxrt754' },
-  znfan294: { longUrl: 'www.techcrunch.com', userId: 'ttxrt754' },
+  vqsvo733: { longUrl: 'http://www.google.com', userId: '000111' },
+  znfan294: { longUrl: 'http://www.google.com', userId: '000111' },
   baoiv200: { longUrl: 'www.medium.com', userId: 'ttxrt754' }
 }
+
+we wanted to mofidy this object - we have the long url and user id indexed by the short url.
+but we wanted to see the long url and short url by user.  thus we needed to rearrange the sort.
+so we took this object, and created a function do to this.  steps:
+1. create new empty array. newArray.
+2. create new empty object. newObject.
+3. iterate over the object using for...in.
+4. for key shortUrls in database, newObject = dataBase[key]...this creates an object for each key.
+5. then, set a new key: value pair in the new object - first, for each key in urlDatabase, create newObject (unnamed)
+into which you put the object at each key value.  so you have:
+  newobject = {
+    { longUrl: 'http://www.lighthouselabs.ca', userId: '000000' }
+    { longUrl: 'http://www.google.com', userId: '000111' }
+    { longUrl: 'www.medium.com', userId: 'ttxrt754' }
+  }
+Then, set new key: value pair - newObject.shortUrl = iterablekey of urlDatabase.  THIS SETS THE KEY OF URL DATABASE
+AS THE VALUES OF THE KEY SHORTURL IN THE NEW OBJECT.  SO NEW OBJECT BECOMES:
+  newobject = {
+    { longUrl: 'http://www.lighthouselabs.ca', userId: '000000', shortUrl: 'b2xVn2' }
+    { longUrl: 'http://www.google.com', userId: '000111', shortUrl: '9sm5xk' }
+    { longUrl: 'www.medium.com', userId: 'ttxrt754', shortUrl: 'vqsco733' }
+  }
+
+Finally, we push these objects into our empty array:
+
+    newArray.push(newobject) - BUT WE ONLY DO THIS FOR THE KEYS = to the row of the userID we want:
+    if (urlDatabase[foo]["userId"] == id we want, for the iterable key in Urldatabase, push the
+     new object in:
+      newArray.push(urlObject)..
+
+    so for each key in Urldatabase, we create an object that looks like this:
+    { longUrl: 'www.medium.com', userId: 'ttxrt754', shortUrl: 'vqsco733' }
+    then, for each key in urlDatabase, if the value of the userId for that key = the userId we want, we do this:
+      take empty array - newArray[] - and push the newobject inside:
+      newArray.push(urlObject)..
+
+    this returns: - you can then iterate over this array - for..of - for iterable of newArray, return
+    iterable.shortUrl and iterable.longUrl - that gives you the shortUrl and longUrl by user.
+
+    Output:
+ ttxrt754 =
+  [ { longUrl: 'www.buzzfeed.com',
+    userId: 'ttxrt754',
+    shortUrl: 'vqsvo733' },
+  { longUrl: 'www.techcrunch.com',
+    userId: 'ttxrt754',
+    shortUrl: 'znfan294' },
+  { longUrl: 'www.medium.com',
+    userId: 'ttxrt754',
+    shortUrl: 'baoiv200' } ]
+
 
 
 
@@ -27,28 +78,35 @@ var urlDatabase = {
 //
 
 // Output:
-// // { ttxrt754:
-// //    { longUrl: 'www.medium.com',
-// //      shortUrl: 'baoiv200',
-// //      userId: 'ttxrt754' } }
+//newArray called:
+ttxrt754 =
+  [ { longUrl: 'www.buzzfeed.com',
+    userId: 'ttxrt754',
+    shortUrl: 'vqsvo733' },
+  { longUrl: 'www.techcrunch.com',
+    userId: 'ttxrt754',
+    shortUrl: 'znfan294' },
+  { longUrl: 'www.medium.com',
+    userId: 'ttxrt754',
+    shortUrl: 'baoiv200' } ]
 
 
 
 
 //Using array:
-function urlsForUser(id) {
-var userUrls = [];
-  for (var foo in urlDatabase) {
-    var urlObject = urlDatabase[foo];
-       urlObject['shortUrl'] = foo;
-    if (urlDatabase[foo]["userId"] == id) {
-    userUrls.push(urlObject);
+  function urlsForUser(id) {
+  var userUrls = [];
+    for (var foo in urlDatabase) {
+      var urlObject = urlDatabase[foo];
+         urlObject['shortUrl'] = foo;
+      if (urlDatabase[foo]["userId"] == id) {
+      userUrls.push(urlObject);
+      }
     }
-  }
-  // console.log(userUrls);
-  console.log(userUrls);
-  return (userUrls);
-};
+    // console.log(userUrls);
+    console.log(userUrls);
+    return (userUrls);
+  };
 
 // var urls = urlDatabase.map(function urlsForUser(id) {
 //   return (id.shortUrl);
@@ -70,15 +128,15 @@ userUrls.map(function (userUrls) {
   console.log(userUrls['longUrl'] +": " + userUrls['shortUrl']);
 });
 
-  // [ { longUrl: 'www.buzzfeed.com',
-  //   userId: 'ttxrt754',
-  //   shortUrl: 'vqsvo733' },
-  // { longUrl: 'www.techcrunch.com',
-  //   userId: 'ttxrt754',
-  //   shortUrl: 'znfan294' },
-  // { longUrl: 'www.medium.com',
-//   //   userId: 'ttxrt754',
-//   //   shortUrl: 'baoiv200' } ]
+  [ { longUrl: 'www.buzzfeed.com',
+    userId: 'ttxrt754',
+    shortUrl: 'vqsvo733' },
+  { longUrl: 'www.techcrunch.com',
+    userId: 'ttxrt754',
+    shortUrl: 'znfan294' },
+  { longUrl: 'www.medium.com',
+    userId: 'ttxrt754',
+    shortUrl: 'baoiv200' } ]
 
 // for (var item of urlsForUser('ttxrt754')) {
 //   console.log(item['longUrl']);
