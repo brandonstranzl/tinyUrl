@@ -47,7 +47,7 @@
 
   <% userUrls.map(function (url) { %>
 
-      <li><a href="/u/<% url['shorturl'] %>"><%= url['shortUrl'] %></a>: <a href="<% url['longUrl'] %>"><%= url['longUrl'] %></a>
+      <li><a href="/u/<%= url['shortUrl'] %>"><%= url['shortUrl'] %></a>: <a href="<%= url['longUrl'] %>"><%= url['longUrl'] %></a>
       </li>
 
         <form class="delete" method="POST" action="/urls/<%= url['shortUrl'] %>/delete">

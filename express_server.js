@@ -70,8 +70,12 @@ const users = {
 
 // gets:
 app.get("/", (req, res) => {
-  console.log(req.session);
-  res.end("hello");
+  if (users[req.session["useridcookie"]]) {
+  res.redirect("/urls");
+  }
+  if (!users[req.session["useridcookie"]]) {
+  res.redirect("/login");
+  }
 });
 
 app.get("/urls.json", (req, res) => {
@@ -257,9 +261,18 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/u/:shortUrl", (req, res) => {
-  let longUrl = urlDatabase[req.params.shortUrl]['longUrl'];
-  console.log(longUrl)
-  res.redirect(longUrl);
+  var match;
+  for (var shortUrl in urlDatabase) {
+    if (req.params.shortUrl === shortUrl) {
+      match = true;
+    };
+  }
+  if (match === true) {
+    let longUrl = urlDatabase[req.params.shortUrl]['longUrl'];
+    res.redirect(longUrl);
+  } else {
+    res.send("That shortUrl doesn't exist!!🤢");
+  }
 });
 
 app.get("/hello", (req, res) => {
@@ -275,8 +288,12 @@ app.post("/urls", (req, res) => {
   // console.log(userdata.id);
   if (req.body.longUrl.length > 0) {
     var newShortUrl = generateRandomString();
-    var longUrl = req.body.longUrl;
-    urlDatabase[newShortUrl] = {longUrl: req.body.longUrl, shortUrl: newShortUrl, userId: userId};
+    if (!req.body.longUrl.startsWith('http:')) {
+    var longUrl = 'http://'+req.body.longUrl;
+    } else {
+      longUrl = req.body.longUrl
+    };
+    urlDatabase[newShortUrl] = {longUrl: longUrl, shortUrl: newShortUrl, userId: userId};
     console.log(urlDatabase);
     // let templateVars = {
     // userinfo: users[userId],
@@ -288,7 +305,7 @@ app.post("/urls", (req, res) => {
     // console.log(urlDatabase["shortUrl"]);
     // urlDatabase["shortUrl"]["longUrl"] = "req.body.longUrl";
     // urlDatabase["shortUrl"]["userId"] = "userinfo.id";
-    res.redirect("/urls");
+    res.redirect("/urls/" + newShortUrl);
   } else {
     let templateVars = {
       // usernamecookie: req.session["usernamecookie"],

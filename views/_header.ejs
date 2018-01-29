@@ -2,26 +2,32 @@
 
   <style>
 
-  header {
-    border-bottom: 20px;
-    margin-bottom: 30px;
+  .box1 {
+    display: inline-block;
+    margin-before: 5px;
+    margin-after: 5px;
+    padding: 5px;
+  }
 
+  .inline {
+    display: inline-block;
   }
 
   </style>
 
 <h1>My tinyUrl project</h1>
 
-<p><%= userinfo.id %></p>
+<div class=box1>
 <p><%= userinfo.email %></p>
+</div>
 
-    <form action="/logout" method="POST">
+    <form class=inline action="/logout" method="POST">
     <input type="submit" value="Logout">
     </form>
 
 <p>Existing Users, please <a href= "/login"> Login.</a></p>
 
-<p>New Users, please register: <a href= "/register"> Register.</a></p>
+<p class=inline>New Users, please register: <a href= "/register"> Register.</a></p>
 
 <hr />
 </header>
