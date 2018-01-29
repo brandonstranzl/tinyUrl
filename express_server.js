@@ -152,7 +152,7 @@ app.post("/login", (req, res) => {
   } else {
   for (var foo in users) {
     console.log(users[foo]['password']);
-    if ((users[foo]['email'] === username) && (bcrypt.compareSync(password), users[foo]['password']) == true) {
+    if ((users[foo]['email'] === username) && (bcrypt.compareSync(password), hashedPassword) == true) {
       res.cookie('useridcookie', users[foo]['id']);
       res.redirect('/urls');
       return;
